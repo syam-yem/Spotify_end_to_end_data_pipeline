@@ -1,0 +1,9 @@
+{
+	"name": "azuredatafactoryforspotifydata",
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "911c9069-6721-4be4-b8fc-9a4c09a86d6d",
+		"tenantId": "ac133eff-3521-49fe-b7f5-92236ebb93d8"
+	}
+}
