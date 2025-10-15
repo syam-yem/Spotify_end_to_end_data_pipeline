@@ -1,0 +1,11 @@
+{
+	"name": "linked_ser_for_Azure_key_vault",
+	"properties": {
+		"description": "linked service for Azure key vault password",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://azurevaultforadf.vault.azure.net/"
+		}
+	}
+}
