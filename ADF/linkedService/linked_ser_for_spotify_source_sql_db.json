@@ -1,0 +1,24 @@
+{
+	"name": "linked_ser_for_spotify_source_sql_db",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "sales-0120-server.database.windows.net",
+			"database": "spotifydatabase",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "syam's_saledb",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "linked_ser_for_Azure_key_vault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "spotify-sql-db-password",
+				"secretVersion": "fb8ec551e6eb431da5166c6d94db43ab"
+			}
+		}
+	}
+}
