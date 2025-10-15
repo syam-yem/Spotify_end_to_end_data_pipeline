@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "azuredatafactoryforspotifydata"
+		},
+		"linked_ser_ADLS_sink_for_spotify_db_data_properties_typeProperties_url": {
+			"value": "https://spotifystorageaccount02.dfs.core.windows.net/"
+		},
+		"linked_ser_for_Azure_key_vault_properties_typeProperties_baseUrl": {
+			"value": "https://vault-for-spotify-adf.vault.azure.net/"
+		},
+		"linked_ser_for_spotify_source_sql_db_properties_typeProperties_server": {
+			"value": "sales-0120-server.database.windows.net"
+		},
+		"linked_ser_for_spotify_source_sql_db_properties_typeProperties_database": {
+			"value": "spotifydatabase"
+		},
+		"linked_ser_for_spotify_source_sql_db_properties_typeProperties_userName": {
+			"value": "syam's_saledb"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
