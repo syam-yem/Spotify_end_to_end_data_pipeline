@@ -1,0 +1,10 @@
+{
+	"name": "linked_ser_ADLS_sink_for_spotify_db_data",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://spotifystorageaccount02.dfs.core.windows.net/"
+		}
+	}
+}
