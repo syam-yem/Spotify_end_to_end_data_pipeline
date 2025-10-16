@@ -31,7 +31,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table_name} where @{pipeline().parameters.cdc_col} >@{activity('Json_CDC_file_lookup').output.firstRow.cdc_timestamp}",
+							"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table_name} where @{pipeline().parameters.cdc_col} > '@{if(empty(pipeline().parameters.from_date),activity('Json_CDC_file_lookup').output.firstRow.cdc_timestamp,pipeline().parameters.from_date)}'\n\n",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -68,7 +68,10 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "bronze",
-							"folder": "destination",
+							"folder": {
+								"value": "@pipeline().parameters.table_name",
+								"type": "Expression"
+							},
 							"file": {
 								"value": "@concat(pipeline().parameters.table_name,'_',variables('current_timestamp'))",
 								"type": "Expression"
@@ -106,7 +109,10 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "bronze",
-							"folder": "cdc",
+							"folder": {
+								"value": "@concat(pipeline().parameters.table_name,'_cdc')",
+								"type": "Expression"
+							},
 							"file": "cdc.json"
 						}
 					}
@@ -146,6 +152,50 @@
 						"value": "@greater(activity('copy_data_from_sql_to_adls').output.dataRead,0)",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "Delete empty files",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "Dataset_for_sink_parquet",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "bronze",
+										"folder": {
+											"value": "@pipeline().parameters.table_name",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@concat(pipeline().parameters.table_name,'_',variables('current_timestamp'))",
+											"type": "Expression"
+										}
+									}
+								},
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "linked_ser_ADLS_sink_for_spotify_db_data",
+										"type": "LinkedServiceReference"
+									}
+								},
+								"enableLogging": true,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "Update_cdc_timestamp",
@@ -204,8 +254,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "bronze",
-										"folder": "cdc",
-										"file": "emptyjson.json"
+										"folder": {
+											"value": "@concat(pipeline().parameters.table_name,'_cdc')",
+											"type": "Expression"
+										},
+										"file": "empty.json"
 									}
 								}
 							],
@@ -215,7 +268,10 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "bronze",
-										"folder": "cdc",
+										"folder": {
+											"value": "@concat(pipeline().parameters.table_name,'_cdc')",
+											"type": "Expression"
+										},
 										"file": "cdc.json"
 									}
 								}
@@ -262,6 +318,9 @@
 				"type": "string"
 			},
 			"cdc_col": {
+				"type": "string"
+			},
+			"from_date": {
 				"type": "string"
 			}
 		},

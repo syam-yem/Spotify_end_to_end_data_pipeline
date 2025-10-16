@@ -5,6 +5,9 @@
 			"referenceName": "linked_ser_for_spotify_source_sql_db",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Spotify_data_datasets"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": []

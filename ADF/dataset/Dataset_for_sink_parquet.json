@@ -16,6 +16,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Spotify_data_datasets"
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
