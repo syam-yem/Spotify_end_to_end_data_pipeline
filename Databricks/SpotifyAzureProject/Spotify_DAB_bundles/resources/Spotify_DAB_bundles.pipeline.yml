@@ -1,0 +1,14 @@
+# The main pipeline for Spotify_DAB_bundles
+resources:
+  pipelines:
+    Spotify_DAB_bundles_pipeline:
+      name: Spotify_DAB_bundles_pipeline
+      catalog: spotify_azure_databricks_ws
+      schema: Spotify_DAB_bundles_${bundle.target}
+      serverless: true
+      libraries:
+        - notebook:
+            path: ../src/pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
