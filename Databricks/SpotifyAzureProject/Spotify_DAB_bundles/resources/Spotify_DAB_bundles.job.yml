@@ -1,45 +1,37 @@
-# The main job for Spotify_DAB_bundles.
 resources:
   jobs:
-    Spotify_DAB_bundles_job:
-      name: Spotify_DAB_bundles_job
-
-      trigger:
-        # Run this job every day, exactly one day from the last run; see https://docs.databricks.com/api/workspace/jobs/create#trigger
-        periodic:
-          interval: 1
-          unit: DAYS
-
-      #email_notifications:
-      #  on_failure:
-      #    - your_email@example.com
-
+    Spotify_data_load_job:
+      name: Spotify_data_load_job
       tasks:
-        - task_key: notebook_task
+        - task_key: Fact_silver_task
           notebook_task:
-            notebook_path: ../src/notebook.ipynb
-
-        - task_key: refresh_pipeline
+            notebook_path: ../../src/silver/silver_notebooks/Silver_Facts
+            base_parameters:
+              file_name: FactStream
+            source: WORKSPACE
+        - task_key: parameter_task
+          notebook_task:
+            notebook_path: /../../src/silver/silver_notebooks/parameters
+            source: WORKSPACE
+        - task_key: Silver_dim_task
           depends_on:
-            - task_key: notebook_task
+            - task_key: parameter_task
+          for_each_task:
+            inputs: "{{tasks.parameter_task.values.datasets}}"
+            task:
+              task_key: Silver_dim_task_iteration
+              notebook_task:
+                notebook_path: ../../src/silver/silver_notebooks/Silver_Dimensions
+                base_parameters:
+                  file_name: ""
+                source: WORKSPACE
+        - task_key: DLT_GOLD_task
+          depends_on:
+            - task_key: Fact_silver_task
+            - task_key: Silver_dim_task
           pipeline_task:
-            pipeline_id: ${resources.pipelines.Spotify_DAB_bundles_pipeline.id}
-
-        - task_key: main_task
-          depends_on:
-            - task_key: refresh_pipeline
-          environment_key: default
-          python_wheel_task:
-            package_name: Spotify_DAB_bundles
-            entry_point: main
-
-      # A list of task execution environment specifications that can be referenced by tasks of this job.
-      environments:
-        - environment_key: default
-
-          # Full documentation of this spec can be found at:
-          # https://docs.databricks.com/api/workspace/jobs/create#environments-spec
-          spec:
-            environment_version: "2"
-            dependencies:
-              - ../dist/*.whl
+            pipeline_id: 5c8293bc-526b-4623-8aba-fb81872078b0
+            full_refresh: false
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
